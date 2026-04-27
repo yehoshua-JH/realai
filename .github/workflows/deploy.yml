@@ -60,8 +60,13 @@ jobs:
             # Install dependencies
             pnpm install --frozen-lockfile
 
-            # Run database migrations (safe - only applies new changes)
-            pnpm db:push
+            # Run database migrations only if DATABASE_URL is configured
+            if grep -q 'DATABASE_URL=.' .env 2>/dev/null; then
+              echo "Running database migrations..."
+              pnpm db:push
+            else
+              echo "Skipping db:push — DATABASE_URL not configured"
+            fi
 
             # Build for production
             pnpm build
