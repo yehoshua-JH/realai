@@ -1,7 +1,7 @@
 // RealAI 2.0 — Follow-Up View
 import { useState } from "react";
 import { FollowUpLead } from "@/lib/data";
-import { useFollowUpStore } from "@/lib/store";
+import { useFollowUpApi } from "@/lib/api-store";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { toast } from "sonner";
 
@@ -13,7 +13,8 @@ function ageStyle(days: number) {
 
 export default function FollowUpView() {
   const { push } = useNotifications();
-  const { items, markSent, markAllSent } = useFollowUpStore();
+  const { followUpLeads: items, markSent, isLoading } = useFollowUpApi();
+  const markAllSent = () => items.forEach(i => markSent(i.id));
 
   const sendOne = (id: string, name: string) => {
     markSent(id);
@@ -56,7 +57,7 @@ export default function FollowUpView() {
       {/* Follow-up List */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 14 }}>
         {items.map((item, i) => {
-          const ag = ageStyle(item.daysAgo);
+          const ag = ageStyle(item.daysAgo ?? 0);
           return (
             <div key={item.id} style={{
               background: 'var(--ra-card)',
@@ -70,7 +71,7 @@ export default function FollowUpView() {
               transition: 'all 0.15s',
               animation: `fadeInUp 0.35s ease both`,
               animationDelay: `${i * 0.04}s`,
-              opacity: item.sent ? 0.45 : 1,
+              opacity: item.status === "sent" ? 0.45 : 1,
             }}
               onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--ra-border2)'}
               onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--ra-border)'}
@@ -80,29 +81,29 @@ export default function FollowUpView() {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--ra-text)' }}>{item.name}</div>
-                <div style={{ fontSize: 11, color: 'var(--ra-muted)', marginTop: 1 }}>{item.detail}</div>
+                <div style={{ fontSize: 11, color: 'var(--ra-muted)', marginTop: 1 }}>{item.lastMsg ?? ""}</div>
               </div>
               <span style={{ fontSize: 10, fontWeight: 800, padding: '3px 9px', borderRadius: 100, marginRight: 'auto', whiteSpace: 'nowrap', background: ag.bg, color: ag.color }}>
                 {item.daysAgo} ימים
               </span>
               <button
-                onClick={() => !item.sent && sendOne(item.id, item.name)}
+                onClick={() => item.status !== "sent" && sendOne(item.id, item.name)}
                 style={{
                   fontSize: 10,
                   fontWeight: 700,
                   padding: '4px 10px',
                   borderRadius: 6,
                   border: 'none',
-                  cursor: item.sent ? 'default' : 'pointer',
+                  cursor: item.status === "sent" ? 'default' : 'pointer',
                   fontFamily: "'Heebo', sans-serif",
                   whiteSpace: 'nowrap',
                   transition: 'all 0.15s',
-                  background: item.sent ? 'rgba(16,185,129,0.1)' : 'rgba(59,130,246,0.12)',
-                  color: item.sent ? 'var(--ra-green)' : '#7db3ff',
-                  pointerEvents: item.sent ? 'none' : 'auto',
+                  background: item.status === "sent" ? 'rgba(16,185,129,0.1)' : 'rgba(59,130,246,0.12)',
+                  color: item.status === "sent" ? 'var(--ra-green)' : '#7db3ff',
+                  pointerEvents: item.status === "sent" ? 'none' : 'auto',
                 }}
               >
-                {item.sent ? '✅ נשלח' : '💬 שלח'}
+                {item.status === "sent" ? '✅ נשלח' : '💬 שלח'}
               </button>
             </div>
           );

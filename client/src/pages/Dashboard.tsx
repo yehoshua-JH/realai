@@ -1,7 +1,8 @@
 // RealAI 2.0 — Main Dashboard Page
 // Design: Dark fintech command center, RTL Hebrew, Heebo font
 // Assembles Sidebar + Topbar + all 8 views
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { trpc } from "@/lib/trpc";
 import Sidebar, { ViewId } from "@/components/Sidebar";
 import Topbar from "@/components/Topbar";
 import DashboardView from "@/components/views/DashboardView";
@@ -20,6 +21,12 @@ export default function Dashboard() {
   const [activeView, setActiveView] = useState<ViewId>('dashboard');
   const [missedCount, setMissedCount] = useState(5);
   const { user, login, logout } = useAuthStore();
+  const seedMutation = trpc.seed.run.useMutation();
+
+  useEffect(() => {
+    // Seed initial demo data if DB is empty
+    seedMutation.mutate();
+  }, []);
 
   const renderView = () => {
     switch (activeView) {

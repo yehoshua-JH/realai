@@ -2,8 +2,8 @@
 import { Lead, Property, PipelineDeal, Agent } from "./data";
 
 // ── CSV Export ────────────────────────────────────────────────────────────────
-function toCSV(rows: string[][], headers: string[]): string {
-  const escape = (v: string) => `"${v.replace(/"/g, '""')}"`;
+function toCSV(rows: (string | null | undefined)[][], headers: string[]): string {
+  const escape = (v: string | null | undefined) => `"${(v ?? "").replace(/"/g, '""')}"`;
   return [headers.map(escape), ...rows.map(r => r.map(escape))].join('\n');
 }
 
@@ -23,21 +23,21 @@ export function exportLeadsCSV(leads: Lead[]) {
     l.name, l.phone,
     l.type === 'buyer' ? 'קונה' : 'מוכר',
     l.status === 'hot' ? 'חם' : l.status === 'warm' ? 'פושר' : 'קר',
-    l.area, l.rooms, l.budget ?? '', l.agent, l.lastContact,
+    l.area ?? '', l.rooms ?? '', l.budget ?? '', l.agent ?? '', l.lastContact ?? '',
   ]);
   downloadFile(toCSV(rows, headers), `לידים_${today()}.csv`, 'text/csv;charset=utf-8');
 }
 
 export function exportPropertiesCSV(properties: Property[]) {
   const headers = ['כתובת', 'מחיר', 'תגיות', 'סוכן', 'קונים מתאימים'];
-  const rows = properties.map(p => [p.name, p.price, p.tags.join(' | '), p.agent, String(p.matches)]);
+  const rows = properties.map(p => [p.name, p.price, p.tags.join(' | '), p.agent ?? '', String(p.matches ?? 0)]);
   downloadFile(toCSV(rows, headers), `נכסים_${today()}.csv`, 'text/csv;charset=utf-8');
 }
 
 export function exportPipelineCSV(deals: PipelineDeal[]) {
   const stageLabel: Record<string, string> = { lead: 'ליד', tour: 'סיור', negotiation: 'מו"מ', contract: 'חוזה', closed: 'נסגר' };
   const headers = ['שם עסקה', 'שלב', 'פרטים', 'סוכן', 'ערך'];
-  const rows = deals.map(d => [d.name, stageLabel[d.stage] ?? d.stage, d.detail.replace('\n', ' '), d.agent, d.value ?? '']);
+  const rows = deals.map(d => [d.name, stageLabel[d.stage] ?? d.stage, (d.detail ?? '').replace('\n', ' '), d.agent ?? '', d.value ?? '']);
   downloadFile(toCSV(rows, headers), `pipeline_${today()}.csv`, 'text/csv;charset=utf-8');
 }
 
@@ -105,7 +105,7 @@ export function exportManagerReport(leads: Lead[], properties: Property[], deals
   <tr><th>עסקה</th><th>שלב</th><th>פרטים</th><th>סוכן</th></tr>
   ${deals.map(d => {
     const sl: Record<string,string> = { lead:'ליד', tour:'סיור', negotiation:'מו"מ', contract:'חוזה', closed:'✅ נסגר' };
-    return `<tr><td>${d.name}</td><td>${sl[d.stage]??d.stage}</td><td>${d.detail.replace('\n',' ')}</td><td>${d.agent}</td></tr>`;
+    return `<tr><td>${d.name}</td><td>${sl[d.stage]??d.stage}</td><td>${(d.detail ?? '').replace('\n',' ')}</td><td>${d.agent}</td></tr>`;
   }).join('')}
 </table>
 

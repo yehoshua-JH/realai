@@ -1,7 +1,7 @@
 // RealAI 2.0 — Pipeline View (fully functional with stage moves + localStorage + CSV export)
 import { useState } from "react";
 import { PipelineDeal, PipelineStage } from "@/lib/data";
-import { usePipelineStore } from "@/lib/store";
+import { usePipelineApi } from "@/lib/api-store";
 import { exportPipelineCSV } from "@/lib/export";
 import { toast } from "sonner";
 import { nanoid } from "nanoid";
@@ -39,12 +39,12 @@ function PipelineCard({ deal, onMoveForward, onMoveBack, onDelete }: {
     }}>
       <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--ra-text)', marginBottom: 3 }}>{deal.name}</div>
       <div style={{ fontSize: 10, color: 'var(--ra-muted)', marginBottom: 7, lineHeight: 1.4 }}>
-        {deal.detail.split('\n').map((l, i) => <span key={i}>{l}{i === 0 && <br />}</span>)}
+        {(deal.detail ?? "").split('\n').map((l, i) => <span key={i}>{l}{i === 0 && <br />}</span>)}
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }}>
         <span style={{ fontSize: 8, color: 'var(--ra-muted)' }}>👤 {deal.agent}</span>
-        <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 100, background: deal.tagColor, color: isClosed ? '#34d399' : deal.tag.includes('חם') ? '#ff6b6b' : '#7db3ff' }}>
-          {deal.tag}
+        <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 7px', borderRadius: 100, background: deal.tagColor ?? "transparent", color: isClosed ? '#34d399' : (deal.tag ?? '').includes('חם') ? '#ff6b6b' : '#7db3ff' }}>
+          {deal.tag ?? ""}
         </span>
       </div>
       {/* Stage move buttons */}
@@ -127,7 +127,7 @@ function AddDealModal({ onClose, onSave }: { onClose: () => void; onSave: (d: Pi
 }
 
 export default function PipelineView() {
-  const { deals, updateDealStage, addDeal, deleteDeal } = usePipelineStore();
+  const { deals, moveDeal: updateDealStage, addDeal, deleteDeal, isLoading } = usePipelineApi();
   const [showAdd, setShowAdd] = useState(false);
 
   const dealsByStage = (stage: PipelineStage) => deals.filter(d => d.stage === stage);

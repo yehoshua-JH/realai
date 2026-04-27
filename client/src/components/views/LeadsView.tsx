@@ -1,7 +1,7 @@
-// RealAI 2.0 — Leads View (fully functional with CRUD + localStorage)
+// RealAI 2.0 — Leads View (fully functional with CRUD + real database)
 import { useState } from "react";
 import { Lead } from "@/lib/data";
-import { useLeadsStore } from "@/lib/store";
+import { useLeadsApi } from "@/lib/api-store";
 import AddLeadModal from "@/components/modals/AddLeadModal";
 import LeadDetailModal from "@/components/modals/LeadDetailModal";
 import { toast } from "sonner";
@@ -82,7 +82,7 @@ function LeadCard({ lead, onClick }: { lead: Lead; onClick: () => void }) {
 }
 
 export default function LeadsView() {
-  const { leads, addLead, updateLead, deleteLead } = useLeadsStore();
+  const { leads, addLead, updateLead, deleteLead, isLoading } = useLeadsApi();
   const [filter, setFilter] = useState<'all' | 'hot' | 'warm' | 'cold'>('all');
   const [showAdd, setShowAdd] = useState(false);
   const [editLead, setEditLead] = useState<Lead | null>(null);
@@ -91,7 +91,7 @@ export default function LeadsView() {
 
   const filtered = leads
     .filter(l => filter === 'all' || l.status === filter)
-    .filter(l => !search || l.name.includes(search) || l.phone.includes(search) || l.area.includes(search));
+    .filter(l => !search || l.name.includes(search) || l.phone.includes(search) || (l.area ?? "").includes(search));
 
   const handleSave = (lead: Lead) => {
     if (editLead) {

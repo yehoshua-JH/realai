@@ -1,7 +1,7 @@
 // RealAI 2.0 — Properties View (fully functional with CRUD + localStorage + CSV export)
 import { useState } from "react";
 import { Property } from "@/lib/data";
-import { usePropertiesStore } from "@/lib/store";
+import { usePropertiesApi } from "@/lib/api-store";
 import AddPropertyModal from "@/components/modals/AddPropertyModal";
 import { exportPropertiesCSV } from "@/lib/export";
 import { toast } from "sonner";
@@ -22,7 +22,7 @@ function PropertyCard({ prop, onEdit, onDelete }: { prop: Property; onEdit: () =
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}
     >
       {/* Image area */}
-      <div style={{ height: 110, background: prop.bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 38, position: 'relative' }}>
+      <div style={{ height: 110, background: prop.bgColor ?? undefined, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 38, position: 'relative' }}>
         {prop.emoji}
         <div style={{ position: 'absolute', bottom: 7, left: 7, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)', borderRadius: 6, padding: '3px 9px', fontSize: 11, fontWeight: 800, color: '#fff' }}>
           {prop.price}
@@ -61,13 +61,13 @@ function PropertyCard({ prop, onEdit, onDelete }: { prop: Property; onEdit: () =
 }
 
 export default function PropertiesView() {
-  const { properties, addProperty, updateProperty, deleteProperty } = usePropertiesStore();
+  const { properties, addProperty, updateProperty, deleteProperty, isLoading } = usePropertiesApi();
   const [showAdd, setShowAdd] = useState(false);
   const [editProp, setEditProp] = useState<Property | null>(null);
   const [search, setSearch] = useState('');
 
   const filtered = properties.filter(p =>
-    !search || p.name.includes(search) || p.tags.some(t => t.includes(search)) || p.agent.includes(search)
+    !search || p.name.includes(search) || p.tags.some((t: string) => t.includes(search)) || (p.agent ?? "").includes(search)
   );
 
   const handleSave = (prop: Property) => {

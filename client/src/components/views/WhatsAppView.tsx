@@ -1,7 +1,8 @@
 // RealAI 2.0 — WhatsApp Bot View
-// Integrates with VITE_FRONTEND_FORGE_API_KEY for live AI responses
+// AI powered via server-side tRPC route (works with any API key)
 import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
 
 interface Message {
   id: string;
@@ -33,6 +34,7 @@ function getTime() {
 }
 
 export default function WhatsAppView() {
+  const chatMutation = trpc.ai.chat.useMutation();
   const [messages, setMessages] = useState<Message[]>([
     { id: 'm0', role: 'bot', text: 'שלום! 👋 אני הבוט החכם של ABC נדל״ן.\nאשמח לעזור לך למצוא את הנכס המושלם.\nמה אתה מחפש?', time: '09:41' },
   ]);

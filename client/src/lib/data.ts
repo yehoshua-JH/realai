@@ -13,36 +13,36 @@ export interface Lead {
   phone: string;
   type: LeadType;
   status: LeadStatus;
-  area: string;
-  rooms: string;
-  budget?: string;
-  agent: string;
-  lastContact: string;
-  daysAgo: number;
-  notes?: string;
-  avatar: string;
+  area: string | null;
+  rooms: string | null;
+  budget?: string | null;
+  agent: string | null;
+  lastContact: string | null;
+  daysAgo: number | null;
+  notes?: string | null;
+  avatar: string | null;
 }
 
 export interface Property {
   id: string;
-  emoji: string;
+  emoji: string | null;
   name: string;
   tags: string[];
   price: string;
-  agent: string;
-  matches: number;
-  bgColor: string;
+  agent: string | null;
+  matches: number | null;
+  bgColor: string | null;
 }
 
 export interface PipelineDeal {
   id: string;
   name: string;
-  detail: string;
-  agent: string;
+  detail: string | null;
+  agent: string | null;
   stage: PipelineStage;
-  tag: string;
-  tagColor: string;
-  value?: string;
+  tag: string | null;
+  tagColor: string | null;
+  value?: string | null;
 }
 
 export interface Agent {
@@ -59,37 +59,41 @@ export interface Agent {
 export interface Appointment {
   id: string;
   name: string;
-  type: string;
-  detail: string;
+  type: string | null;
+  detail: string | null;
   time: string;
-  agent: string;
+  agent: string | null;
   status: 'confirmed' | 'pending' | 'cancelled';
-  nightCallSent: boolean;
+  nightCallSent: boolean | null;
   nightCallResult?: 'confirmed' | 'no-answer' | null;
   morningCallStatus: 'scheduled' | 'retry' | 'done';
 }
 
 export interface MissedCall {
   id: string;
-  name?: string;
+  name?: string | null;
   phone: string;
-  isKnown: boolean;
-  attempts: number;
-  timeAgo: string;
-  status?: string;
-  stage?: string;
+  isKnown?: boolean | null;
+  attempts?: number | null;
+  timeAgo?: string | null;
+  time?: string | null;
+  status?: string | null;
+  stage?: string | null;
+  source?: string | null;
   urgency: 'high' | 'medium' | 'low';
-  handled?: boolean;
+  handled?: boolean | null;
 }
 
 export interface FollowUpLead {
   id: string;
   name: string;
-  type: LeadType;
-  detail: string;
-  daysAgo: number;
-  sent: boolean;
-  avatar: string;
+  type: LeadType | null;
+  detail: string | null;
+  daysAgo: number | null;
+  sent?: boolean | null;
+  status?: string | null;
+  urgency?: string | null;
+  avatar: string | null;
 }
 
 // ── Dashboard Stats ──

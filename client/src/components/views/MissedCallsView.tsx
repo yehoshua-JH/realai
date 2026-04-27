@@ -1,6 +1,6 @@
 // RealAI 2.0 — Missed Calls View
 import { MissedCall } from "@/lib/data";
-import { useMissedCallsStore } from "@/lib/store";
+import { useMissedCallsApi } from "@/lib/api-store";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { toast } from "sonner";
 
@@ -10,12 +10,12 @@ interface MissedCallsViewProps {
 
 export default function MissedCallsView({ onMissedCountChange }: MissedCallsViewProps) {
   const { push } = useNotifications();
-  const { calls, markHandled, markAllHandled } = useMissedCallsStore();
+  const { calls, markHandled, markAllHandled, isLoading } = useMissedCallsApi();
 
   const unhandledCount = calls.filter(c => !c.handled).length;
 
-  const handleCall = (call: MissedCall) => {
-    markHandled(call.id);
+  const handleCall = (call: any) => {
+    markHandled((call as any).id ?? call.id);
     const remaining = unhandledCount - 1;
     onMissedCountChange(remaining);
     push('📞', 'מתחבר...', `מתקשר חזרה אל ${call.name ?? call.phone}`);
@@ -86,17 +86,17 @@ export default function MissedCallsView({ onMissedCountChange }: MissedCallsView
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--ra-text)', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   {call.name ?? call.phone}
-                  {!call.isKnown && (
+                  {!(call as any).isKnown && (
                     <span style={{ fontSize: 9, fontWeight: 800, padding: '1px 6px', borderRadius: 100, background: 'rgba(59,130,246,0.13)', color: '#93c5fd', animation: 'pulseBadge 2s infinite' }}>
                       לא מוכר
                     </span>
                   )}
                 </div>
                 <div style={{ fontSize: 10, color: 'var(--ra-muted)', marginTop: 2 }}>
-                  {call.isKnown ? `${call.phone} · ` : ''}ניסה <strong style={{ color: call.attempts >= 3 ? 'var(--ra-red)' : 'var(--ra-text)' }}>{call.attempts} פעמים</strong> · {call.timeAgo}
+                  {(call as any).isKnown ? `${call.phone} · ` : ''}ניסה <strong style={{ color: ((call as any).attempts ?? 0) >= 3 ? 'var(--ra-red)' : 'var(--ra-text)' }}>{(call as any).attempts ?? 1} פעמים</strong> · {call.time ?? "לא ידוע"}
                 </div>
-                {call.stage && <div style={{ fontSize: 10, color: 'var(--ra-muted)', marginTop: 1 }}>{call.status} · {call.stage}</div>}
-                {call.attempts >= 3 && <div style={{ fontSize: 10, color: 'var(--ra-red)', marginTop: 1 }}>⚠️ ניסה הרבה פעמים – לקוח מתעניין!</div>}
+                {(call as any).stage && <div style={{ fontSize: 10, color: 'var(--ra-muted)', marginTop: 1 }}>{(call as any).status} · {(call as any).stage}</div>}
+                {((call as any).attempts ?? 0) >= 3 && <div style={{ fontSize: 10, color: 'var(--ra-red)', marginTop: 1 }}>⚠️ ניסה הרבה פעמים – לקוח מתעניין!</div>}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5, alignItems: 'flex-end', flexShrink: 0 }}>
                 {isHandled ? (

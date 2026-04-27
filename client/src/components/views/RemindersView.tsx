@@ -1,7 +1,7 @@
 // RealAI 2.0 — Reminders View (fully functional with CRUD + localStorage)
 import { useState } from "react";
 import { Appointment } from "@/lib/data";
-import { useAppointmentsStore } from "@/lib/store";
+import { useAppointmentsApi } from "@/lib/api-store";
 import AddAppointmentModal from "@/components/modals/AddAppointmentModal";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { toast } from "sonner";
@@ -13,7 +13,7 @@ const STATUS_CONFIG = {
 };
 
 export default function RemindersView() {
-  const { appts, updateStatus, addAppointment } = useAppointmentsStore();
+  const { appointments: appts, updateAppointment: updateStatus, addAppointment, isLoading } = useAppointmentsApi();
   const { push } = useNotifications();
   const [simulating, setSimulating] = useState(false);
   const [simLog, setSimLog] = useState<string[]>([]);
