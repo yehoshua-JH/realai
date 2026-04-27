@@ -1,6 +1,7 @@
 // RealAI 2.0 — Follow-Up View
 import { useState } from "react";
-import { followUpLeads, FollowUpLead } from "@/lib/data";
+import { FollowUpLead } from "@/lib/data";
+import { useFollowUpStore } from "@/lib/store";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { toast } from "sonner";
 
@@ -12,16 +13,16 @@ function ageStyle(days: number) {
 
 export default function FollowUpView() {
   const { push } = useNotifications();
-  const [items, setItems] = useState<FollowUpLead[]>(followUpLeads);
+  const { items, markSent, markAllSent } = useFollowUpStore();
 
   const sendOne = (id: string, name: string) => {
-    setItems(prev => prev.map(i => i.id === id ? { ...i, sent: true } : i));
+    markSent(id);
     push('💬', 'Follow-up נשלח', `הודעה אוטומטית נשלחה ל${name}`);
     toast.success(`💬 נשלח ל${name}`);
   };
 
   const sendAll = () => {
-    setItems(prev => prev.map(i => ({ ...i, sent: true })));
+    markAllSent();
     push('🚀', 'נשלח לכולם', '7 הודעות follow-up נשלחו אוטומטית');
     toast.success('🚀 נשלח לכולם', { description: '7 הודעות follow-up נשלחו אוטומטית' });
   };

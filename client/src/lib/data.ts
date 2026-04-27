@@ -79,6 +79,7 @@ export interface MissedCall {
   status?: string;
   stage?: string;
   urgency: 'high' | 'medium' | 'low';
+  handled?: boolean;
 }
 
 export interface FollowUpLead {

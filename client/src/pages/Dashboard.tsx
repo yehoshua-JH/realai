@@ -13,10 +13,13 @@ import PipelineView from "@/components/views/PipelineView";
 import RemindersView from "@/components/views/RemindersView";
 import MissedCallsView from "@/components/views/MissedCallsView";
 import ManagerView from "@/components/views/ManagerView";
+import LoginScreen from "@/components/LoginScreen";
+import { useAuthStore } from "@/lib/store";
 
 export default function Dashboard() {
   const [activeView, setActiveView] = useState<ViewId>('dashboard');
   const [missedCount, setMissedCount] = useState(5);
+  const { user, login, logout } = useAuthStore();
 
   const renderView = () => {
     switch (activeView) {
@@ -33,11 +36,20 @@ export default function Dashboard() {
     }
   };
 
+  // Auth gate
+  if (!user) {
+    return <LoginScreen onLogin={(name, password) => {
+      const ok = login(name, password);
+      if (!ok) return false;
+      return true;
+    }} />;
+  }
+
   return (
     <div style={{ fontFamily: "'Heebo', sans-serif", direction: 'rtl' }}>
       <Sidebar activeView={activeView} onNavigate={setActiveView} missedCount={missedCount} />
       <main style={{ marginRight: 220, minHeight: '100vh' }}>
-        <Topbar activeView={activeView} />
+        <Topbar activeView={activeView} onLogout={logout} userName={user.name} userAvatar={user.avatar} />
         <div style={{ padding: '22px 24px' }}>
           {renderView()}
         </div>

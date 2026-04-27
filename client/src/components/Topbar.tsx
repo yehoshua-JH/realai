@@ -50,6 +50,22 @@ export default function Topbar({ activeView }: TopbarProps) {
       </div>
 
       <div style={{ display: 'flex', gap: 7, alignItems: 'center', position: 'relative' }}>
+        {/* User info + logout */}
+        {userName && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 7, background: 'rgba(255,255,255,0.04)', border: '1px solid var(--ra-border)' }}>
+            <span style={{ fontSize: 14 }}>{userAvatar}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--ra-text)' }}>{userName}</span>
+          </div>
+        )}
+        {onLogout && (
+          <button
+            onClick={onLogout}
+            title="התנתק"
+            style={{ padding: '6px 10px', borderRadius: 7, fontSize: 12, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', cursor: 'pointer', transition: 'all 0.15s' }}
+          >
+            🚪
+          </button>
+        )}
         {/* Notification Bell */}
         <button
           onClick={toggleNotifs}

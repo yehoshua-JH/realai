@@ -1,5 +1,6 @@
 // RealAI 2.0 — Manager View
 import { agents } from "@/lib/data";
+import { exportAgentsCSV } from "@/lib/export";
 import { toast } from "sonner";
 
 const TEAM_STATS = [
@@ -101,8 +102,8 @@ export default function ManagerView() {
           <div style={{ fontSize: 10, color: 'var(--ra-muted)', marginTop: 2 }}>הפק דוחות מפורטים לכל סוכן</div>
         </div>
         {[
-          { label: '📊 דוח PDF', action: () => toast.success('📊 דוח PDF', { description: 'הדוח נשלח למייל' }) },
-          { label: '📋 Excel', action: () => toast.success('📋 Excel', { description: 'הקובץ הורד' }) },
+          { label: '📊 דוח CSV', action: () => { exportAgentsCSV(agents); toast.success('📊 דוח CSV הורד'); } },
+          { label: '📋 ייצוא Excel', action: () => { exportAgentsCSV(agents); toast.success('📋 קובץ הורד'); } },
           { label: '📧 שלח לסוכנים', action: () => toast.success('📧 נשלח', { description: 'הדוח נשלח לכל הסוכנים' }) },
         ].map(btn => (
           <button
