@@ -18,9 +18,12 @@ const VIEW_LABELS: Record<string, { title: string; subtitle: string }> = {
 
 interface TopbarProps {
   activeView: string;
+  onLogout?: () => void;
+  userName?: string;
+  userAvatar?: string;
 }
 
-export default function Topbar({ activeView }: TopbarProps) {
+export default function Topbar({ activeView, onLogout, userName, userAvatar }: TopbarProps) {
   const { notifications, unreadCount, markAllRead } = useNotifications();
   const [showNotifs, setShowNotifs] = useState(false);
   const meta = VIEW_LABELS[activeView] ?? VIEW_LABELS.dashboard;
